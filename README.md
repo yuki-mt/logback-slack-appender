@@ -5,8 +5,9 @@ The differences are this is made in Scala and this sends messages to Slack by us
 really really appreciate [logback-slack-appender](https://github.com/maricn/logback-slack-appender)
 
 # Setup
-Add Dependency
+Add Dependency in build.sbt
 ```
+resolvers += "Logback Appender for Slack" at "https://yuki-mt.github.io/logback-slack-webhook-appender"
 libraryDependencides += "com.yukimt" % "logback-slack_2.11" % "1.0"
 ```
 
