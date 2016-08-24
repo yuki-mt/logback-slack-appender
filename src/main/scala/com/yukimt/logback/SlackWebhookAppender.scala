@@ -8,11 +8,11 @@ import scalaj.http._
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization
 
-class SlackWebhookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
+class SlackWebHookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
   implicit val formats = DefaultFormats
 
   private var channel: Option[String] = None
-  private var webhookUrl: Option[String] = None
+  private var webHookUrl: Option[String] = None
   private var username: Option[String] = None
   private var iconEmoji: Option[String] = None
   private var layout: Layout[ILoggingEvent]  = defaultLayout
@@ -27,7 +27,7 @@ class SlackWebhookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
   override def append(evt: ILoggingEvent) = {
     val optResult = for {
       c <- channel
-      w <- webhookUrl
+      w <- webHookUrl
     } yield {
       val payload = Payload(c,
         username.getOrElse("Slack Logback Appender"),
@@ -38,10 +38,10 @@ class SlackWebhookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
       else Result.Failure(res.body.toString)
     }
 
-    optResult.getOrElse(Result.Failure("Channel Name is not set")) match {
+    optResult.getOrElse(Result.Failure("channel or webHookUrl is not set")) match {
       case Result.Success => ()
       case Result.Failure(msg) =>
-        val errorMessage = s"Error in Logback-Slack Webhook Appender: $msg"
+        val errorMessage = s"Error in Logback-Slack Web Hook Appender: $msg"
         new RuntimeException(errorMessage).printStackTrace
         addError(errorMessage)
     }
@@ -49,7 +49,7 @@ class SlackWebhookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
   }
 
   def setChannel(t: String) = { channel = Some(if(t.startsWith("#")) t else "#" + t) }
-  def setWebhookUrl(w: String) = {webhookUrl = Some(w)}
+  def setWebHookUrl(w: String) = {webHookUrl = Some(w)}
   def setUsername(u: String) = {username = Some(u)}
   def setIconEmoji(i: String) = {
     val prefix = if(i.startsWith(":")) "" else ":"
