@@ -11,4 +11,4 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-native"   % "3.2.11"
 )
 
-publishTo := Some(Resolver.file("logback-slack",file("."))(Patterns(true, Resolver.mavenStyleBasePattern)))
+publishTo := Some(Resolver.file("logback-slack",file("./docs"))(Patterns(true, Resolver.mavenStyleBasePattern)))
