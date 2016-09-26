@@ -17,8 +17,6 @@ class SlackWebHookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
   private var iconEmoji: Option[String] = None
   private var layout: Layout[ILoggingEvent]  = defaultLayout
 
-  case class Payload(channel: String, username: String, icon_emoji: String, text: String)
-
   private def defaultLayout:Layout[ILoggingEvent] = new LayoutBase[ILoggingEvent]{
     def doLayout(event: ILoggingEvent) :String =
       s"-- [${event.getLevel}] - ${event.getFormattedMessage.replaceAll("\n", "\n\t")}"
@@ -29,10 +27,12 @@ class SlackWebHookAppender extends UnsynchronizedAppenderBase[ILoggingEvent]{
       c <- channel
       w <- webHookUrl
     } yield {
+      val attachment = Attachment(layout.doLayout(evt), "danger")
       val payload = Payload(c,
         username.getOrElse("Slack Logback Appender"),
         iconEmoji.getOrElse(":japanese_goblin:"),
-        layout.doLayout(evt))
+        "Error detected!!",
+        Some(Seq(attachment)))
       val res = Http(w).postForm(Seq("payload" -> Serialization.write(payload))).asString
       if(res.code == 200) Result.Success
       else Result.Failure(res.body.toString)
